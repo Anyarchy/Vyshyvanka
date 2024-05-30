@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Confirm Classification</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Confirm the Correct Class</h1>
+            <form action="{{ url_for('confirm', filename=filename, prediction=prediction) }}" method="post">
+                <div class="form-group">
+                    <label for="class_selection">Select the correct class:</label>
+                    <select name="class_selection" id="class_selection" class="form-control">
+                        {% for class in classes %}
+                        <option value="{{ class }}">{{ class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+    </div>
+</body>
+</html>

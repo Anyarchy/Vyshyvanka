@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Виберіть правильний клас</h2>
+<form action="{{ url_for('incorrect', filename=filename) }}" method="post">
+    <select name="new_class" class="form-select">
+        {% for cls in classes %}
+        <option value="{{ cls }}">{{ cls }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary mt-3">Зберегти</button>
+</form>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block content %}
+<section id="home">
+    <h1 style="font-size: 2em; text-align: center;">Ласкаво просимо на сайт Вишиванки!</h1>
+    <p style="font-size: 1.2em; text-align: center;">Вишиванка — не просто одяг, це символ культури та традиції.
+        Досліджуйте, завантажуйте та оцінюйте українські вишиванки.</p>
+
+    <div id="map"></div> <!-- Контейнер для карти -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="/static/leaflet-polygon.drawImage-canvas.js"></script>
+    <script>
+        var map = L.map('map', {
+            preferCanvas: true,
+        }).setView([48.3794, 31.1656], 6); // Координати центру України та масштаб
+
+        L.tileLayer('https://tile.osmand.net/hd/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Завантаження GeoJSON і додавання його на карту
+        fetch('{{ url_for("static", filename="regions.json") }}')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                L.geoJson(data, {
+                    style: function (feature) {
+                        return { imgId: feature.properties.imgId }; // Встановлює зображення для кожного регіону
+                    },
+                    onEachFeature: function (feature, layer) {
+                        const regionPopup = document.getElementById(`region-popup-${feature.properties.code}`)
+                        layer.bindPopup(regionPopup); // Показує ім'я регіону в спливаючому вікні
+                    }
+                }).addTo(map);
+            });
+
+        const maxSize = 5 * 1024 * 1024; // 5 MB in bytes
+        function validateFileSize(event) {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (file.size > maxSize) {
+                    alert('Розмір файлу повинен бути менше 5 МБ');
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</section>
+
+<section id="your_embroidery" class="mt-5">
+    <h2 class="text-center mt-4 mb-4">Завантажте ваше зображення для класифікації</h2>
+    <div class="upload-form-container mx-auto">
+        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return validateFileSize(event)" id="upload-form">
+            <input type="file" name="file" id="fileInput" class="form-control mb-3" accept=".jpg, .jpeg, .png, .gif">
+            <input type="submit" value="Завантажити" class="btn btn-primary">
+        </form>
+    </div>
+</section>
+
+<section id="gallery" class="mt-5">
+    <h2 class="text-center mt-4 mb-4">Галерея вишиванок</h2>
+    {% for region in region_images %}
+    <img id="{{ region }}" style="display:none;"
+        src="{{ url_for('static', filename='image/regions/' ~ region ~ '.jpg') }}">
+    {% endfor %}
+
+    <div class="d-none">
+        {% for region in regions %}
+        <div id="region-popup-{{ region.code }}">
+            <a class="card-title link-secondary" href="#region-{{ region.code }}">
+                <h5>{{ region.name }}</h5>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% for region in regions %}
+            <div id="region-{{ region.code }}" class="col-md-4 mb-3">
+                <div class="card d-flex flex-column">
+                    <div class="card-img-top">
+                        <div id="carousel-{{ loop.index }}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">{% for image in images[region.code] %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                    <img src="{{ url_for('static', filename='Dataset/' ~ region.code ~ '/' ~ image) }}"
+                                        class="d-block w-100" alt="{{ region.name }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#carousel-{{ loop.index }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#carousel-{{ loop.index }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ region.name }}</h5>
+                        <p class="card-text fs-6">
+                            {{ region.description }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-body-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('upload-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var formData = new FormData(this);
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('modal-body-content').innerHTML = data;
+            var resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+            resultModal.show();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+
+{% endblock %}

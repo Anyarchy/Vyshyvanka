@@ -1,0 +1,95 @@
+/* styles.css */
+html {
+    scroll-padding-top: 80px; /* height of sticky header */
+    font-size: 16px;
+}
+
+body {
+    font-family: "Noto Sans", sans-serif;
+    background-color: #fffcfa;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100%;
+}
+
+body > .container {
+    padding-top: 80px;
+}
+
+.navbar-custom {
+    background-color: #fff5ee; /* rgb(252 243 233); */
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.nav-link {
+    color: #30122e;
+    font-size: 1.5rem;
+    font-weight: normal;
+    text-align: center;
+}
+
+.nav-link:hover {
+    color: #30122e;
+    text-decoration: none;
+}
+
+.navbar-nav {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Центрування навігаційних елементів */
+}
+
+.carousel-item img {
+    height: 300px; /* Висота зображень */
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.carousel-item {
+    height: 300px; /* Фіксована висота для зображень */
+}
+
+.card {
+    height: 100%; /* Забезпечує, що всі карточки в рядку мають однакову висоту */
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    flex: 1; /* Забезпечує, що тіло карточки заповнює всі доступне місце */
+}
+
+#map {
+    height: 600px;
+}
+
+.card-img-top {
+    width: 100%; /* Ширина зображення встановлюється на 100% */
+    object-fit: cover;
+}
+
+.img-thumbnail {
+    max-width: 100%;
+    height: auto;
+}
+
+.text-center img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.leaflet-container a {
+    color: unset;
+    -webkit-tap-highlight-color: unset;
+}
+
+.upload-form-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    border: 2px solid #30122e;
+    border-radius: 10px;
+    background-color: #fff;
+}
