@@ -1,0 +1,82 @@
+<div class="container">
+    <h2 class="text-center mb-4">Результати класифікації</h2>
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <h5 class="card-title">Передбачені класи:</h5>
+            <ul class="list-group">
+                {% for result in results %}
+                <li class="list-group-item">
+                    Клас: {{ result.class_name }} - Впевненість: {{ result.confidence | round(2) }}%
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="d-flex justify-content-center mt-4">
+                <img src="{{ url_for('static', filename='Dataset/' ~ filename) }}" class="img-fluid img-thumbnail mx-auto d-block" alt="Ваше зображення" style="max-width: 300px;">
+            </div>
+            <div class="text-center mt-4">
+                <h5 class="mb-3">Чи була класифікація правильною?</h5>
+                <a href="{{ url_for('correct', filename=filename) }}" class="btn btn-success me-2">Так</a>
+                <a href="{{ url_for('incorrect', filename=filename) }}" class="btn btn-danger me-2">Ні</a>
+                <a href="{{ url_for('unknown', filename=filename) }}" class="btn btn-secondary">Не знаю</a>
+            </div>
+            <div class="text-center mt-4">
+                <!-- FontAwesome Social Share Buttons -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}&quote=Я класифікував свою вишиванку, її регіон: {{ results[0].class_name }}"
+                   target="_blank"
+                   class="btn btn-primary me-2"
+                   style="background-color: #3b5998; color: white;">
+                   <i class="fab fa-facebook-f"></i> Поділитись на Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text=Я класифікував свою вишиванку, її регіон: {{ results[0].class_name }}"
+                   target="_blank"
+                   class="btn btn-info me-2"
+                   style="background-color: #1da1f2; color: white;">
+                   <i class="fab fa-twitter"></i> Поділитись на Twitter
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}&summary=Я класифікував свою вишиванку, її регіон: {{ results[0].class_name }}"
+                   target="_blank"
+                   class="btn btn-success"
+                   style="background-color: #0077b5; color: white;">
+                   <i class="fab fa-linkedin-in"></i> Поділитись на LinkedIn
+                </a>
+            </div>
+        </div>
+    </div>
+    <h4 class="text-center mb-4">Галерея регіону: {{ results[0].class_name }}</h4>
+    <div id="regionGalleryCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for i in range(0, all_images|length, 3) %}
+            <div class="carousel-item {% if i == 0 %}active{% endif %}">
+                <div class="d-flex justify-content-center">
+                    {% for j in range(3) %}
+                        {% if i + j < all_images|length %}
+                            <div class="col-md-4">
+                                <img src="{{ url_for('static', filename='Dataset/' ~ results[0].class_name ~ '/' ~ all_images[i + j]) }}" class="d-block img-fluid" alt="Зображення регіону" style="height: 300px; object-fit: cover;">
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#regionGalleryCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Попереднє</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#regionGalleryCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Наступне</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var carouselElement = document.getElementById('regionGalleryCarousel');
+        if (carouselElement) {
+            var carousel = new bootstrap.Carousel(carouselElement, {
+                interval: false
+            });
+        }
+    });
+</script>

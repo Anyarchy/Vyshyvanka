@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <section id="home">
-    <h1 style="font-size: 2em; text-align: center;">Ласкаво просимо на сайт Вишиванки!</h1>
-    <p style="font-size: 1.2em; text-align: center;">Вишиванка — не просто одяг, це символ культури та традиції.
-        Досліджуйте, завантажуйте та оцінюйте українські вишиванки.</p>
+    <h1 style="font-size: 2em; text-align: center;">Ласкаво просимо на Your vyshyvanka!</h1>
+    <!-- <p style="font-size: 1.2em; text-align: center;">Вишиванка — не просто одяг, це символ культури та традиції.
+        Досліджуйте, завантажуйте та оцінюйте українські вишиванки.</p> -->
 
     <div id="map"></div> <!-- Контейнер для карти -->
 
@@ -54,7 +54,7 @@
 </section>
 
 <section id="your_embroidery" class="mt-5">
-    <h2 class="text-center mt-4 mb-4">Завантажте ваше зображення для класифікації</h2>
+    <h2 class="text-center mt-4 mb-4">Завантажте ваше зображення вишиванки для класифікації</h2>
     <div class="upload-form-container mx-auto">
         <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return validateFileSize(event)" id="upload-form">
             <input type="file" name="file" id="fileInput" class="form-control mb-3" accept=".jpg, .jpeg, .png, .gif">
@@ -108,9 +108,10 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ region.name }}</h5>
-                        <p class="card-text fs-6">
+                        <p class="card-text fs-6 description" id="desc-{{ region.code }}">
                             {{ region.description }}
                         </p>
+                        <button class="btn btn-primary more-btn" data-target="desc-{{ region.code }}">More</button>
                     </div>
                 </div>
             </div>
@@ -151,6 +152,23 @@
             resultModal.show();
         })
         .catch(error => console.error('Error:', error));
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const moreButtons = document.querySelectorAll('.more-btn');
+        moreButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                if (targetElement.style.display === '-webkit-box') {
+                    targetElement.style.display = 'block';
+                    this.textContent = 'Less';
+                } else {
+                    targetElement.style.display = '-webkit-box';
+                    this.textContent = 'More';
+                }
+            });
+        });
     });
 </script>
 

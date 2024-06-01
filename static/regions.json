@@ -5,7 +5,7 @@
             "type": "Feature",
             "properties": {
                 "code": "Galychyna",
-                "imgId": "UALV"
+                "imgId": "UAIF"
             },
             "geometry": {
                 "coordinates": [
@@ -1507,7 +1507,7 @@
             "type": "Feature",
             "properties": {
                 "code": "Podillya",
-                "imgId": "UAVI"
+                "imgId": "UAKM"
             },
             "geometry": {
                 "coordinates": [
@@ -11149,7 +11149,7 @@
             "type": "Feature",
             "properties": {
                 "code": "Slobozhanshchina",
-                "imgId": "UAKK"
+                "imgId": "UASM"
             },
             "geometry": {
                 "coordinates": [
