@@ -20,20 +20,53 @@
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
+        function highlightFeature(e) {
+            var layer = e.target;
+            layer.setStyle({
+                weight: 7,
+                dashArray: '',
+                fillOpacity: 0.7,
+                color: layer.options.color  // Використовує оригінальний колір регіону
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+        }
+
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+        }
+
+        function onEachFeature(feature, layer) {
+            const regionPopup = document.getElementById(`region-popup-${feature.properties.code}`)
+            layer.bindPopup(regionPopup); // Показує ім'я регіону в спливаючому вікні
+
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+            });
+        }
+
+        var geojson;
+
         // Завантаження GeoJSON і додавання його на карту
         fetch('{{ url_for("static", filename="regions.json") }}')
             .then(function (response) {
                 return response.json();
             })
             .then(function (data) {
-                L.geoJson(data, {
+                geojson = L.geoJson(data, {
                     style: function (feature) {
-                        return { imgId: feature.properties.imgId }; // Встановлює зображення для кожного регіону
+                        return {
+                            imgId: feature.properties.imgId,
+                            color: '#000000',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.5
+                        }; // Встановлює зображення для кожного регіону
                     },
-                    onEachFeature: function (feature, layer) {
-                        const regionPopup = document.getElementById(`region-popup-${feature.properties.code}`)
-                        layer.bindPopup(regionPopup); // Показує ім'я регіону в спливаючому вікні
-                    }
+                onEachFeature: onEachFeature
                 }).addTo(map);
             });
 
@@ -50,7 +83,8 @@
             }
             return true;
         }
-    </script>
+</script>
+
 </section>
 
 <section id="your_embroidery" class="mt-5">
